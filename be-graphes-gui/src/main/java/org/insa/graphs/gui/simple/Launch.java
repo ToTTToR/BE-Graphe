@@ -1,4 +1,4 @@
-//Mouton Viktor, 25/03/2021
+//Mouton Viktor, 25/03/2021 21h00
 
 package org.insa.graphs.gui.simple;
 
