@@ -93,9 +93,9 @@ public class BinaryHeapFormatter {
      * Output : the last character of acu is the last character of the current node.
      */
     protected static <E extends Comparable<E>> Context toStringLoop(BinaryHeap<E> heap,
-            Context ctxt, int node, int max_depth) {
+            Context ctxt, int node, int max_elements) {
 
-        if (max_depth < 0) {
+        if (max_elements < 0) {
             return ctxt.appendText(null, "...");
         }
         else {
@@ -124,11 +124,11 @@ public class BinaryHeapFormatter {
                 if (is_last) {
                     Context ctxt3 = new Context(ctxt2.acu, ctxt2.lastmargin, ctxt2.lastmargin);
                     ctxt2 = new Context(toStringLoop(heap, ctxt3.appendText(null, "___"), child,
-                            max_depth - 1).acu, ctxt2.margin, ctxt2.lastmargin);
+                            max_elements - 1).acu, ctxt2.margin, ctxt2.lastmargin);
                 }
                 else {
                     ctxt2 = new Context(toStringLoop(heap, ctxt2.appendText(null, "___"), child,
-                            max_depth - 1).acu, ctxt2.margin, ctxt2.lastmargin).appendNewlines(2);
+                            max_elements - 1).acu, ctxt2.margin, ctxt2.lastmargin).appendNewlines(2);
                 }
             }
 
