@@ -198,11 +198,26 @@ public class Path {
      * 
      * @return true if the path is valid, false otherwise.
      * 
-     * @deprecated Need to be implemented.
+     * deprecated Need to be implemented.
      */
     public boolean isValid() {
-        // TODO:
-        return false;
+        boolean result = true;
+        List<Arc> arcs = this.getArcs();
+        if(this.isEmpty() || this.size()==1) {
+        	//System.out.println("Il y a un chemin avec 0 ou 1 noeud");
+        	result = true;
+        } else if(arcs.get(0).getOrigin() == this.origin){
+        	int taille = this.getArcs().size();
+        	//System.out.println("Nombre d'arc du chemin : "+taille);
+        	for(int i=0;i<taille-1;i++) {
+        		if(arcs.get(i).getDestination() != arcs.get(i+1).getOrigin()) {
+        			//System.out.println("Chemin non valide");
+        			result = false;
+        			break;
+        		}
+        	}
+        } else result = false;
+        return result;
     }
 
     /**
@@ -244,11 +259,14 @@ public class Path {
      * 
      * @return Minimum travel time to travel this path (in seconds).
      * 
-     * @deprecated Need to be implemented.
+     * deprecated Need to be implemented.
      */
     public double getMinimumTravelTime() {
-        // TODO:
-        return 0;
+    	double time = 0;
+        for(Arc truc : this.getArcs()) {
+    		time += truc.getMinimumTravelTime();
+    	}
+        return time;
     }
 
 }
