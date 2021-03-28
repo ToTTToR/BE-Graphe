@@ -54,7 +54,7 @@ public class Path {
 	        	} else {
 	        		int successeurNonValide = 0;
 		        	for(Arc machin : successeurs) { /*Il faut aller voir chaque successeur de chaque noeud de la liste
-		        	pour voir si il y a un noeaud successeur qui fait partie de la liste de noeud donnée. */
+		        	pour voir si il y a un noeud successeur qui fait partie de la liste de noeud donnée. */
 		        		if(machin.getDestination()==nodes.get(indice+1)) { //On regarde si le successeur fait partie de la liste donnée
 		        			if(machin.getMinimumTravelTime()<=travelMin) { //Et il faut voir s'il y a un arc plus court pour y aller.
 		        				travelMin = (float)machin.getMinimumTravelTime();
