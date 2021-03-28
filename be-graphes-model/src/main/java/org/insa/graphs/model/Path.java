@@ -30,13 +30,46 @@ public class Path {
      * @throws IllegalArgumentException If the list of nodes is not valid, i.e. two
      *         consecutive nodes in the list are not connected in the graph.
      * 
-     * @deprecated Need to be implemented.
+     * deprecated Need to be implemented.
      */
     public static Path createFastestPathFromNodes(Graph graph, List<Node> nodes)
             throws IllegalArgumentException {
+    	Path result;
         List<Arc> arcs = new ArrayList<Arc>();
-        // TODO:
-        return new Path(graph, arcs);
+        if(nodes.size()==1) //Il n'y a pas grand chose à faire avec ces 2 conditions, car il n'y a pas d'arc.
+			result = new Path(graph,nodes.get(0));
+        else if(nodes.size() == 0)
+        	result = new Path(graph);
+		else {
+			int indice = 0;
+	        for(Node truc : nodes) {
+	        	if (truc == nodes.get(nodes.size()-1)) break; /* Si l'on est au dernier noeud de la liste,
+	        	peu importe ses successeurs, on skip. */
+	        	List<Arc> successeurs = truc.getSuccessors();
+	        	float travelMin = (float)1/0;
+	        	Arc arcMin = truc.getSuccessors().get(0);
+	        	if(truc.getNumberOfSuccessors()==1) { // Si le noeud n'a qu'un seul successeur
+	        		if(arcMin.getDestination()!=nodes.get(indice+1)) 
+	        			throw new IllegalArgumentException("Successeur non valide");		
+	        	} else {
+	        		int successeurNonValide = 0;
+		        	for(Arc machin : successeurs) { /*Il faut aller voir chaque successeur de chaque noeud de la liste
+		        	pour voir si il y a un noeaud successeur qui fait partie de la liste de noeud donnée. */
+		        		if(machin.getDestination()==nodes.get(indice+1)) { //On regarde si le successeur fait partie de la liste donnée
+		        			if(machin.getMinimumTravelTime()<=travelMin) { //Et il faut voir s'il y a un arc plus court pour y aller.
+		        				travelMin = (float)machin.getMinimumTravelTime();
+		        				arcMin = machin;
+		        			}
+		        		} else successeurNonValide++;
+		        	}
+		        	if(successeurNonValide == successeurs.size()) throw new IllegalArgumentException("Aucun successeur valide");
+	        	}
+	        	arcs.add(arcMin);
+	        	indice++;
+	        }
+	        result = new Path(graph, arcs);
+        }
+        return result;
     }
 
     /**
