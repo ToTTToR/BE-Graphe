@@ -48,22 +48,17 @@ public class Path {
 	        	List<Arc> successeurs = truc.getSuccessors();
 	        	float travelMin = (float)1/0;
 	        	Arc arcMin = truc.getSuccessors().get(0);
-	        	if(truc.getNumberOfSuccessors()==1) { // Si le noeud n'a qu'un seul successeur
-	        		if(arcMin.getDestination()!=nodes.get(indice+1)) 
-	        			throw new IllegalArgumentException("Successeur non valide");		
-	        	} else {
-	        		int successeurNonValide = 0;
-		        	for(Arc machin : successeurs) { /*Il faut aller voir chaque successeur de chaque noeud de la liste
-		        	pour voir si il y a un noeud successeur qui fait partie de la liste de noeud donnée. */
-		        		if(machin.getDestination()==nodes.get(indice+1)) { //On regarde si le successeur fait partie de la liste donnée
-		        			if(machin.getMinimumTravelTime()<=travelMin) { //Et il faut voir s'il y a un arc plus court pour y aller.
-		        				travelMin = (float)machin.getMinimumTravelTime();
-		        				arcMin = machin;
-		        			}
-		        		} else successeurNonValide++;
-		        	}
-		        	if(successeurNonValide == successeurs.size()) throw new IllegalArgumentException("Aucun successeur valide");
-	        	}
+	        	int successeurNonValide = 0;
+		        for(Arc machin : successeurs) { /*Il faut aller voir chaque successeur de chaque noeud de la liste
+		        pour voir si il y a un noeud successeur qui fait partie de la liste de noeud donnée. */
+		        	if(machin.getDestination()==nodes.get(indice+1)) { //On regarde si le successeur fait partie de la liste donnée
+		        		if(machin.getMinimumTravelTime()<=travelMin) { //Et il faut voir s'il y a un arc plus court pour y aller.
+		        			travelMin = (float)machin.getMinimumTravelTime();
+		        			arcMin = machin;
+		        		}
+		        	} else successeurNonValide++;
+		        }
+		        if(successeurNonValide == successeurs.size()) throw new IllegalArgumentException("Aucun successeur valide");
 	        	arcs.add(arcMin);
 	        	indice++;
 	        }
@@ -102,21 +97,16 @@ public class Path {
 	        	List<Arc> successeurs = truc.getSuccessors();
 	        	float longMin = (float)1/0;
 	        	Arc arcMin = truc.getSuccessors().get(0);
-	        	if(truc.getNumberOfSuccessors()==1) { // Si le noeud n'a qu'un seul successeur
-	        		if(arcMin.getDestination()!=nodes.get(indice+1)) 
-	        			throw new IllegalArgumentException("Successeur non valide");		
-	        	} else {
-	        		int successeurNonValide = 0;
-		        	for(Arc machin : successeurs) { /*Il faut aller voir chaque successeur de chaque noeud de la liste
-		        	pour voir si il y a un noeaud successeur qui fait partie de la liste de noeud donnée. */
-		        		if(machin.getDestination()==nodes.get(indice+1)) { //On regarde si le successeur fait partie de la liste donnée
-		        			if(machin.getLength()<=longMin) { //Et il faut voir s'il y a un arc plus court pour y aller.
-		        				longMin = machin.getLength();
-		        				arcMin = machin;
-		        			}
-		        		} else successeurNonValide++;
-		        	}
-		        	if(successeurNonValide == successeurs.size()) throw new IllegalArgumentException("Aucun successeur valide");
+	        	int successeurNonValide = 0;
+		        for(Arc machin : successeurs) { /*Il faut aller voir chaque successeur de chaque noeud de la liste
+		        pour voir si il y a un noeaud successeur qui fait partie de la liste de noeud donnée. */
+		        	if(machin.getDestination()==nodes.get(indice+1)) { //On regarde si le successeur fait partie de la liste donnée
+		        		if(machin.getLength()<=longMin) { //Et il faut voir s'il y a un arc plus court pour y aller.
+		        			longMin = machin.getLength();
+		        			arcMin = machin;
+		        		}
+		        	} else successeurNonValide++;
+		        if(successeurNonValide == successeurs.size()) throw new IllegalArgumentException("Aucun successeur valide");
 	        	}
 	        	arcs.add(arcMin);
 	        	indice++;
