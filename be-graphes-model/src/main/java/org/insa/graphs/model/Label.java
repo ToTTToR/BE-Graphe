@@ -28,6 +28,10 @@ public class Label implements Comparable<Label>{
 		this.père = newFather;
 	}
 	
+	public Arc getFather() {
+		return this.père;
+	}
+	
 	public void setMarked() {
 		this.Marked = true;
 	}
