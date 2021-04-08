@@ -32,6 +32,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         while(!heap.isEmpty()) {
         	Label minTas = heap.deleteMin();
         	minTas.setMarked();
+        	notifyNodeMarked(minTas.SommetCourant);
         	for(Arc successeur : minTas.SommetCourant.getSuccessors()){
         		//Il faut voir si le chemin est valide! Sinon on skip.
         		if (!data.isAllowed(successeur)) {
