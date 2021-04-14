@@ -40,7 +40,9 @@ public class Label implements Comparable<Label>{
 		return this.Marked;
 	}
 	
+	public double getCoutTotal() { return 0.0;}
+	
 	public int compareTo(Label other) {
-        return Double.compare(Cout, other.Cout);
+        return Double.compare(this.getCoutTotal(), other.getCoutTotal());
     }
 }
