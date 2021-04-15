@@ -8,23 +8,38 @@ import org.insa.graphs.algorithm.utils.BinaryHeap;
 import org.insa.graphs.model.*;
 
 public class DijkstraAlgorithm extends ShortestPathAlgorithm {
-
+	
+	private ArrayList<Label> labels;
+	
     public DijkstraAlgorithm(ShortestPathData data) {
         super(data);
+        this.labels = new ArrayList<Label>();
+    }
+    
+    public void setLabels(ShortestPathData data) {
+    	for(int i=0;i<data.getGraph().getNodes().size();i++) 
+        	this.labels.add(new Label(data.getGraph().getNodes().get(i),null,Double.POSITIVE_INFINITY,false));
+    }
+    
+    public Object getLabels() {
+    	return null;
+    }
+    
+    @Override
+    public ArrayList<Label> getLabels(){
+    	return this.labels;
     }
 
     @Override
     protected ShortestPathSolution doRun() {
         final ShortestPathData data = getInputData();
+        this.setLabels(data);
         ShortestPathSolution solution = null;
-        
-        ArrayList<LabelStar> labels = new ArrayList<LabelStar>();
         Graph graph = data.getGraph();
         BinaryHeap<Label> heap = new BinaryHeap<Label>();
       //Phase d'Initialisation (Tous les sommets marqué faux, cout infini et aucun père.
-        for(int i=0;i<graph.getNodes().size();i++) 
-        	labels.add(new LabelStar(graph.getNodes().get(i),null,Double.POSITIVE_INFINITY,false,data.getDestination()));
-        LabelStar labelOrigin = labels.get(data.getOrigin().getId());
+        //System.out.println("Taille de labels : "+this.labels.size());
+        Label labelOrigin = this.getLabels().get(data.getOrigin().getId());
         labelOrigin.setCost(0.0);;
         heap.insert(labelOrigin);
         while(!heap.isEmpty()) {
@@ -39,10 +54,10 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
                     continue;
                 }
         //Il faut voir si nous avons pas déjà marqué le sommet, c'est à dire que l'on ait déjà traité ou non
-        		if(!labels.get(successeur.getDestination().getId()).isMarked()) {
+        		if(!this.getLabels().get(successeur.getDestination().getId()).isMarked()) {
         			double w = data.getCost(successeur);
-        			Label LabelSucc = labels.get(successeur.getDestination().getId());
-        			Label LabelCourant = labels.get(successeur.getOrigin().getId());
+        			Label LabelSucc = this.getLabels().get(successeur.getDestination().getId());
+        			Label LabelCourant = this.getLabels().get(successeur.getOrigin().getId());
         			if(LabelSucc.getCost() > LabelCourant.getCost() + w) {
         				//System.out.println("Mis à jour du coût de "+ LabelSucc.getCost() + " et "+ LabelCourant.getCost()+w);
         				if(LabelSucc.getFather()!=null) heap.remove(LabelSucc); 
@@ -55,7 +70,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         	}
         }
         
-        if (labels.get(data.getDestination().getId()).getFather() == null) {
+        if (this.getLabels().get(data.getDestination().getId()).getFather() == null) {
             solution = new ShortestPathSolution(data, Status.INFEASIBLE);
         }
         else {
@@ -65,10 +80,10 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
 
             // Create the path from the array of predecessors...
             ArrayList<Arc> arcs = new ArrayList<>();
-            Arc arc = labels.get(data.getDestination().getId()).getFather();
+            Arc arc = this.getLabels().get(data.getDestination().getId()).getFather();
             while (arc != null) {
                 arcs.add(arc);
-                arc = labels.get(arc.getOrigin().getId()).getFather();
+                arc = this.getLabels().get(arc.getOrigin().getId()).getFather();
             }
 
             // Reverse the path...

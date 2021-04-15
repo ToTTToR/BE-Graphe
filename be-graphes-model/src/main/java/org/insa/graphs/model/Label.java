@@ -43,6 +43,6 @@ public class Label implements Comparable<Label>{
 	public double getCoutTotal() {return 0.0;}
 	
 	public int compareTo(Label other) {
-        return Double.compare(this.getCoutTotal(), other.getCoutTotal());
+        return Double.compare(this.getCost(), other.getCost());
     }
 }
