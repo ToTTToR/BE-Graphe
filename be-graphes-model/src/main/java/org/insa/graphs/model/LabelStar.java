@@ -1,5 +1,8 @@
 package org.insa.graphs.model;
-import org.insa.graphs.algorithm.*;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import org.insa.graphs.algorithm.shortestpath.*;
 import org.insa.graphs.model.*;
 
 public class LabelStar extends Label {
