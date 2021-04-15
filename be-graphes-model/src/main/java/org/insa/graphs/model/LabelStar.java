@@ -1,23 +1,21 @@
 package org.insa.graphs.model;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import org.insa.graphs.algorithm.shortestpath.*;
-import org.insa.graphs.model.*;
-
 public class LabelStar extends Label {
 	private double coutEstime;
 	
-	private double coutOrigin;
-	
-	private Node truc;
-	
-	public LabelStar(Node sommetCourant, Arc père,double cout,boolean marked,ShortestPathData data) {
+	public LabelStar(Node sommetCourant, Arc père,double cout,boolean marked,Node Destination) {
 		super(sommetCourant, père,cout,marked);
-		this.truc.
+		this.coutEstime = Destination.getPoint().distanceTo(sommetCourant.getPoint());
 	}
 	
 	public double getCoutTotal() {
-		return this.coutEstime + this.coutOrigin;
+		return this.coutEstime + this.getCost();
 	}
+	
+	public int compareTo(LabelStar other) {
+		if(this.getCoutTotal() == other.getCoutTotal())
+			return Double.compare(other.coutEstime,this.coutEstime);
+		else
+			return Double.compare(this.getCoutTotal(), other.getCoutTotal());
+    }
 }

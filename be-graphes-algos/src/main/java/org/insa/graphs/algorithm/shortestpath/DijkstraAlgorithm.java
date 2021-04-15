@@ -18,14 +18,13 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         final ShortestPathData data = getInputData();
         ShortestPathSolution solution = null;
         
-        ArrayList<Label> labels = new ArrayList<Label>();
+        ArrayList<LabelStar> labels = new ArrayList<LabelStar>();
         Graph graph = data.getGraph();
         BinaryHeap<Label> heap = new BinaryHeap<Label>();
       //Phase d'Initialisation (Tous les sommets marqué faux, cout infini et aucun père.
-        for(int i=0;i<graph.getNodes().size();i++) {
-        	labels.add(new Label(graph.getNodes().get(i),null,Double.POSITIVE_INFINITY,false));
-        }
-        Label labelOrigin = labels.get(data.getOrigin().getId());
+        for(int i=0;i<graph.getNodes().size();i++) 
+        	labels.add(new LabelStar(graph.getNodes().get(i),null,Double.POSITIVE_INFINITY,false,data.getDestination()));
+        LabelStar labelOrigin = labels.get(data.getOrigin().getId());
         labelOrigin.setCost(0.0);;
         heap.insert(labelOrigin);
         while(!heap.isEmpty()) {
