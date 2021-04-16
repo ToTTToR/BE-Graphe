@@ -11,11 +11,4 @@ public class LabelStar extends Label {
 	public double getCoutTotal() {
 		return this.coutEstime + this.getCost();
 	}
-	
-	public int compareTo(LabelStar other) {
-		if(this.getCoutTotal() == other.getCoutTotal())
-			return Double.compare(other.coutEstime,this.coutEstime);
-		else
-			return Double.compare(this.getCoutTotal(), other.getCoutTotal());
-    }
 }
