@@ -9,7 +9,7 @@ import org.insa.graphs.model.*;
 
 public class DijkstraAlgorithm extends ShortestPathAlgorithm {
 	
-	public ArrayList<Label> labels = new ArrayList<Label>();;
+	public ArrayList<Label> labels = new ArrayList<Label>();
 		
     public DijkstraAlgorithm(ShortestPathData data) {
         super(data);
