@@ -51,7 +51,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         			if(LabelSucc.getCost() > LabelCourant.getCost() + w) {
         				//System.out.println("Mis à jour du coût de "+ LabelSucc.getCost() + " et "+ LabelCourant.getCost()+w);
         				if(LabelSucc.getFather()!=null) heap.remove(LabelSucc); 
-        				//On regarde si le sommet a un père => si il est dans la pile.
+        				//On regarde si le sommet a un père => si le label est dans la pile.
         				LabelSucc.setCost(LabelCourant.getCost() + w);
         				LabelSucc.setFather(successeur); 
         				heap.insert(LabelSucc);
