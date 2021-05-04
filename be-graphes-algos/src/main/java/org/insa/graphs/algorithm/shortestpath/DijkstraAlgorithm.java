@@ -82,6 +82,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
             // Create the final solution.
             Path chemin = new Path(graph, arcs);
             if(!chemin.isValid()) System.out.println("Chemin non valide!");
+            //System.out.println(chemin.getLength());
             //System.out.println("Longueur du chemin : "+chemin.getLength());
             solution = new ShortestPathSolution(data, Status.OPTIMAL, chemin);
             //System.out.println("Longueur du chemin par l'algo : "+solution.getPath().getLength());
