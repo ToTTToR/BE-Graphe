@@ -1,18 +1,25 @@
 package org.insa.graphs.algorithm.utils;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.insa.graphs.algorithm.ArcInspector;
+import org.insa.graphs.algorithm.ArcInspectorFactory;
+import org.insa.graphs.algorithm.shortestpath.DijkstraAlgorithm;
+import org.insa.graphs.algorithm.shortestpath.ShortestPathData;
+import org.insa.graphs.model.AccessRestrictions;
 import org.insa.graphs.model.Arc;
 import org.insa.graphs.model.Graph;
 import org.insa.graphs.model.Node;
 import org.insa.graphs.model.Path;
 import org.insa.graphs.model.RoadInformation;
 import org.insa.graphs.model.RoadInformation.RoadType;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class AlgoTest {
@@ -22,12 +29,20 @@ public class AlgoTest {
     // Liste de nodes
     private static Node[] nodes;
     
+    @SuppressWarnings("unused")
     private static Path emptyPath, singleNodePath, shortPath, longPath, loopPath, longLoopPath,
     invalidPath;
     
+    @SuppressWarnings("unused")
     private static Arc a2b, a2c, a2d, b2c,b2d,d2b,d2c,d2e,c2e,e2c,e2a;
+
+    private static ShortestPathData data;
+    
+    private static AccessRestrictions restrictions;
+    
 	
-	public static void initAll() {
+    @BeforeClass
+	public static void initAll() throws IOException{
 		RoadInformation infoRoute = new RoadInformation(RoadType.UNCLASSIFIED, null, true, 1, null);
 		nodes = new Node[5];
 	    for (int i = 0; i < nodes.length; ++i) {
@@ -52,6 +67,13 @@ public class AlgoTest {
         invalidPath = new Path(graph, Arrays.asList(new Arc[] { a2d, b2c,c2e}));
 	}
 	
+    @Test
+    public void validPath() {
+    	data = new ShortestPathData(graph, nodes[0], nodes[2], ArcInspectorFactory.getAllFilters().get(0));
+    	DijkstraAlgorithm Dijkstra = new DijkstraAlgorithm(data);
+    	assertTrue(Dijkstra.run().getPath().isValid());
+    	assertEquals(shortPath,Dijkstra.run().getPath());
+    }
 	
 
 }
