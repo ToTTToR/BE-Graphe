@@ -7,14 +7,18 @@ public class AStarAlgorithm extends DijkstraAlgorithm {
     public AStarAlgorithm(ShortestPathData data) {
         super(data);
     }
-    
-    public void SetLabels(ShortestPathData data) {
+   
+    @Override
+    protected void SetLabels(ShortestPathData data) {
     	if(data.getMode()==Mode.LENGTH) {
+    		System.out.println("Mode longueur");
     		for(int i=0;i<data.getGraph().getNodes().size();i++) 
-    			this.labels.add(new LabelStar(data.getGraph().getNodes().get(i),null,Double.POSITIVE_INFINITY,false,data.getDestination()));
+    			labels.add(new LabelStar(data.getGraph().getNodes().get(i),null,Double.POSITIVE_INFINITY,false,data.getDestination()));
     	} else {
+    		System.out.println("Mode temps");
+    		System.out.println("Vitesse max graph : "+data.getGraph().getGraphInformation().getMaximumSpeed());
     		for(int i=0;i<data.getGraph().getNodes().size();i++) 
-    			this.labels.add(new LabelStar(data.getGraph().getNodes().get(i),null,Double.POSITIVE_INFINITY,false,data.getDestination(),data.getMaximumSpeed()));
+    			labels.add(new LabelStar(data.getGraph().getNodes().get(i),null,Double.POSITIVE_INFINITY,false,data.getDestination(),data.getGraph().getGraphInformation().getMaximumSpeed()));
     	}
     }
 }

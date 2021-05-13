@@ -9,15 +9,15 @@ import org.insa.graphs.model.*;
 
 public class DijkstraAlgorithm extends ShortestPathAlgorithm {
 	
-	public ArrayList<Label> labels = new ArrayList<Label>();
+	protected ArrayList<Label> labels = new ArrayList<Label>();
 		
     public DijkstraAlgorithm(ShortestPathData data) {
-        super(data);
+    	super(data);
     }
     //Fonction d'initialisation qui sera utile pour le A star (Tous les sommets marqué faux, cout infini et aucun père.)
-    public void SetLabels(ShortestPathData data) {
+    protected void SetLabels(ShortestPathData data) {
     	for(int i=0;i<data.getGraph().getNodes().size();i++) 
-        	this.labels.add(new Label(data.getGraph().getNodes().get(i),null,Double.POSITIVE_INFINITY,false));
+        	labels.add(new Label(data.getGraph().getNodes().get(i),null,Double.POSITIVE_INFINITY,false));
     }
 
     @Override
@@ -36,9 +36,9 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         	minTas.setMarked();
         	notifyNodeMarked(minTas.SommetCourant);
         	if(minTas.SommetCourant.getId() == data.getDestination().getId()) { //Si le sommet extrait correspond à notre destination
-        		break; //On a trouvé la destination
+        		break; //On a trouvé la destination avec un cout minimal
         	}
-        	System.out.println("Nombre de successeurs : "+ minTas.SommetCourant.getNumberOfSuccessors());
+        	//System.out.println("Nombre de successeurs : "+ minTas.SommetCourant.getNumberOfSuccessors());
         	for(Arc successeur : minTas.SommetCourant.getSuccessors()){
         		//Il faut voir si le chemin est valide (peut être parcouru selon notre mode de transport)! Sinon on skip.
         		if (!data.isAllowed(successeur)) {
@@ -60,7 +60,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         		}
         	}
         }
-        //Si dans notre tableau de labels, le dernier ne correspond pas à celui de notre destination, le problème est pas faisable
+        //Si dans notre tableau de labels, le dernier ne correspond pas à celui de notre destination, le problème n'est pas faisable
         //(Graphe non connexe par exemple.)
         if (labels.get(data.getDestination().getId()).getFather() == null) {
             solution = new ShortestPathSolution(data, Status.INFEASIBLE);
@@ -73,7 +73,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
             // Create the path from the array of predecessors...
             ArrayList<Arc> arcs = new ArrayList<>();
             Arc arc = labels.get(data.getDestination().getId()).getFather();
-            System.out.println("Construction path");
+            //System.out.println("Construction path");
             while (arc != null) {
                 arcs.add(arc);
                 arc = labels.get(arc.getOrigin().getId()).getFather();
