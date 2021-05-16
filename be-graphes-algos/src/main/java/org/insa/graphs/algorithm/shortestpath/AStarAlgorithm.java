@@ -16,7 +16,6 @@ public class AStarAlgorithm extends DijkstraAlgorithm {
     			labels.add(new LabelStar(data.getGraph().getNodes().get(i),null,Double.POSITIVE_INFINITY,false,data.getDestination()));
     	} else {
     		System.out.println("Mode temps");
-    		System.out.println("Vitesse max graph : "+data.getGraph().getGraphInformation().getMaximumSpeed());
     		for(int i=0;i<data.getGraph().getNodes().size();i++) 
     			labels.add(new LabelStar(data.getGraph().getNodes().get(i),null,Double.POSITIVE_INFINITY,false,data.getDestination(),data.getGraph().getGraphInformation().getMaximumSpeed()));
     	}

@@ -11,7 +11,6 @@ public class LabelStar extends Label {
 	public LabelStar(Node sommetCourant, Arc père,double cout,boolean marked,Node Destination, int vitesseEstimé) {
 		super(sommetCourant, père,cout,marked);
 		this.coutEstime = Destination.getPoint().distanceTo(sommetCourant.getPoint())/(double)vitesseEstimé;
-		//System.out.println("Temps estimé : "+this.coutEstime);
 	}
 	
 	public double getCoutTotal() {

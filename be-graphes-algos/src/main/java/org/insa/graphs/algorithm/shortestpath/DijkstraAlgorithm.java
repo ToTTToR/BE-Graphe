@@ -22,36 +22,44 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
 
     @Override
     protected ShortestPathSolution doRun() {
+    
+    	//Initialisation des données et du tas
         final ShortestPathData data = getInputData();
         SetLabels(data);
         ShortestPathSolution solution = null;
         Graph graph = data.getGraph();
         BinaryHeap<Label> heap = new BinaryHeap<Label>();
-        //System.out.println("Taille de labels : "+this.labels.size());
         Label labelOrigin = labels.get(data.getOrigin().getId());
-        labelOrigin.setCost(0.0);;
+        labelOrigin.setCost(0.0);
         heap.insert(labelOrigin);
+        
         while(!heap.isEmpty() && !heap.findMin().isMarked()) { //Condition : pile non vide et le sommet de la pile n'est pas marqué
+        	//On retire le label avec le cout le plus faible, et on le marque
         	Label minTas = heap.deleteMin();
         	minTas.setMarked();
         	notifyNodeMarked(minTas.SommetCourant);
-        	if(minTas.SommetCourant.getId() == data.getDestination().getId()) { //Si le sommet extrait correspond à notre destination
+        	
+        	//Si le sommet extrait correspond à notre destination
+        	if(minTas.SommetCourant.getId() == data.getDestination().getId()) { 
         		break; //On a trouvé la destination avec un cout minimal
         	}
-        	//System.out.println("Nombre de successeurs : "+ minTas.SommetCourant.getNumberOfSuccessors());
+        	
+        	//On parcours tous ses successeurs
         	for(Arc successeur : minTas.SommetCourant.getSuccessors()){
+        		
         		//Il faut voir si le chemin est valide (peut être parcouru selon notre mode de transport)! Sinon on skip.
         		if (!data.isAllowed(successeur)) {
                     continue;
                 }
-        //Il faut voir si nous avons pas déjà marqué le sommet successeur, c'est à dire que l'on ait déjà traité ou non
+        		
+        		//Il faut voir si nous avons pas déjà marqué le sommet successeur, c'est à dire que l'on ait déjà traité ou non
         		if(!labels.get(successeur.getDestination().getId()).isMarked()) {
         			double w = data.getCost(successeur);
         			Label LabelSucc = labels.get(successeur.getDestination().getId());
         			Label LabelCourant = labels.get(successeur.getOrigin().getId());
         			//On compare le cout du sommet successeur avec le cout du sommet courant + le cout du trajet
         			if(LabelSucc.getCost() > LabelCourant.getCost() + w) { 
-        				//On regarde si le sommet a un père => si le label est dans la pile.
+        				//On regarde si le sommet a un père => si le label est dans la pile. 
         				if(LabelSucc.getFather()!=null) heap.remove(LabelSucc); 
         				LabelSucc.setCost(LabelCourant.getCost() + w);
         				LabelSucc.setFather(successeur); 
@@ -60,11 +68,13 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         		}
         	}
         }
+        
         //Si dans notre tableau de labels, le dernier ne correspond pas à celui de notre destination, le problème n'est pas faisable
         //(Graphe non connexe par exemple.)
         if (labels.get(data.getDestination().getId()).getFather() == null) {
             solution = new ShortestPathSolution(data, Status.INFEASIBLE);
         }
+        //repris de l'algo de Bellman avec des modifications
         else {
 
             // The destination has been found, notify the observers.
@@ -85,10 +95,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
             // Create the final solution.
             Path chemin = new Path(graph, arcs);
             if(!chemin.isValid()) System.out.println("Chemin non valide!");
-            //System.out.println(chemin.getLength());
-            //System.out.println("Longueur du chemin : "+chemin.getLength());
             solution = new ShortestPathSolution(data, Status.OPTIMAL, chemin);
-            //System.out.println("Longueur du chemin par l'algo : "+solution.getPath().getLength());
         }
         
         return solution;
