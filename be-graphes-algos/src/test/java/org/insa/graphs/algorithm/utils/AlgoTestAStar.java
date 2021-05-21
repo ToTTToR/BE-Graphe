@@ -21,12 +21,14 @@ import org.junit.Test;
 public class AlgoTestAStar extends AlgoTest{
 	public static ShortestPathSolution makeSolution(ShortestPathData data) {
 		AStarAlgorithm Astar = new AStarAlgorithm(data);
+		System.out.println("haha");
     	return Astar.run();
     }
 	
 	@Test
-	public void CompareDijkstraAStar() throws IOException{
-		String mapName = "/Users/macair/Desktop/INSA Learning/BE Graphe/Maps/insa.mapgr";
+	public void CompareAStarWithDijkstra() throws IOException{
+		//String mapName = "/Users/macair/Desktop/INSA Learning/BE Graphe/Maps/insa.mapgr";
+		String mapName = "/Users/viktor/Desktop/ReINSA LEARNING/BE Graphe/BE-Graphe/Maps/insa.mapgr";
 		GraphReader reader = new BinaryGraphReader(new DataInputStream(new BufferedInputStream(new FileInputStream(mapName))));
     	Graph graphINSA = reader.read();
     	
@@ -38,6 +40,20 @@ public class AlgoTestAStar extends AlgoTest{
     	
     	//Longueur des chemins égaux?
     	assertEquals((int)solutionDijkstra.getPath().getLength(),(int)solution.getPath().getLength());
+    	
+    	//Chemins égaux?
+    	for(int i=0;i<solutionDijkstra.getPath().getArcs().size();i++) {
+    		assertEquals(solutionDijkstra.getPath().getArcs().get(i),solution.getPath().getArcs().get(i));
+    	}
+    	
+    	//Test en temps
+    	data = new ShortestPathData(graphINSA, graphINSA.getNodes().get(804),graphINSA.getNodes().get(429), ArcInspectorFactory.getAllFilters().get(2));
+    	Dijkstra = new DijkstraAlgorithm(data);
+    	solutionDijkstra = Dijkstra.run();
+    	solution = makeSolution(data);
+    	
+    	//Cout en temps des chemins égaux?
+    	assertEquals((int)solutionDijkstra.getPath().getMinimumTravelTime(),(int)solution.getPath().getMinimumTravelTime());
     	
     	//Chemins égaux?
     	for(int i=0;i<solutionDijkstra.getPath().getArcs().size();i++) {

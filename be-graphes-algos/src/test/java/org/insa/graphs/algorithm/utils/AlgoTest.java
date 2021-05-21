@@ -25,9 +25,10 @@ import org.insa.graphs.model.io.GraphReader;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+//Class de test pour Dijkstra
 public class AlgoTest {
 	//Le dit graph
-	private static Graph graph1,graph2,graphOneNode,graphNotConnex,graphCarre,graphINSA;
+	private static Graph graph1,graph2,graphNotConnex,graphCarre,graphINSA;
 
     // Liste de nodes
     private static Node[] nodes;
@@ -282,11 +283,14 @@ public class AlgoTest {
 	
     @Test
     public void compareWithBellman() throws IOException{
-    	//get graph of map carré
-    	String mapName = "/Users/macair/Desktop/INSA Learning/BE Graphe/Maps/carre.mapgr";
+    	//Test avec map carré
+    	//String mapName = "/Users/macair/Desktop/INSA Learning/BE Graphe/Maps/carre.mapgr";
+    	String mapName = "/Users/viktor/Desktop/ReINSA LEARNING/BE Graphe/BE-Graphe/Maps/carre.mapgr";
     	GraphReader reader = new BinaryGraphReader(new DataInputStream(new BufferedInputStream(new FileInputStream(mapName))));
     	graphCarre = reader.read();
-    	data = new ShortestPathData(graphCarre, graphCarre.getNodes().get(0),graphCarre.getNodes().get(9), ArcInspectorFactory.getAllFilters().get(2));
+    	
+    	//Test en distance
+    	data = new ShortestPathData(graphCarre, graphCarre.getNodes().get(0),graphCarre.getNodes().get(9), ArcInspectorFactory.getAllFilters().get(0));
     	BellmanFordAlgorithm BM = new BellmanFordAlgorithm(data);
     	
     	//Construction des solutions 
@@ -301,8 +305,24 @@ public class AlgoTest {
     		assertEquals(solutionBM.getPath().getArcs().get(i),solution.getPath().getArcs().get(i));
     	}
     	
+    	//Test en temps
+    	data = new ShortestPathData(graphCarre, graphCarre.getNodes().get(0),graphCarre.getNodes().get(9), ArcInspectorFactory.getAllFilters().get(2));
+    	BM = new BellmanFordAlgorithm(data);
+    	
+    	solutionBM = BM.run();
+    	solution = makeSolution(data);
+    	
+    	//Temps pris par les chemins égaux?
+    	assertEquals((int)solutionBM.getPath().getMinimumTravelTime(),(int)solution.getPath().getMinimumTravelTime());
+    	
+    	//Chemins égaux?
+    	for(int i=0;i<solutionBM.getPath().getArcs().size();i++) {
+    		assertEquals(solutionBM.getPath().getArcs().get(i),solution.getPath().getArcs().get(i));
+    	}
+    	
     	//Test avec carte de l'INSA
-    	mapName = "/Users/macair/Desktop/INSA Learning/BE Graphe/Maps/insa.mapgr";
+    	//mapName = "/Users/macair/Desktop/INSA Learning/BE Graphe/Maps/insa.mapgr";
+    	mapName = "/Users/viktor/Desktop/ReINSA LEARNING/BE Graphe/BE-Graphe/Maps/insa.mapgr";
     	reader = new BinaryGraphReader(new DataInputStream(new BufferedInputStream(new FileInputStream(mapName))));
     	graphINSA = reader.read();
     	
@@ -321,7 +341,7 @@ public class AlgoTest {
     	}
     	
     	//Test en temps
-    	data = new ShortestPathData(graphINSA, graphINSA.getNodes().get(1304),graphINSA.getNodes().get(725), ArcInspectorFactory.getAllFilters().get(2));
+    	data = new ShortestPathData(graphINSA, graphINSA.getNodes().get(804),graphINSA.getNodes().get(203), ArcInspectorFactory.getAllFilters().get(2));
     	BM = new BellmanFordAlgorithm(data);
     	solutionBM = BM.run();
     	solution = makeSolution(data);
@@ -336,5 +356,38 @@ public class AlgoTest {
     	
     	System.out.println("Temps de solvabilité BellmannFord : "+solutionBM.getSolvingTime().toString());
     	System.out.println("Temps de solvabilité Dijkstra/AStar : "+solution.getSolvingTime().toString());
+    }
+    
+    @Test
+    public void FonctionnementDijkstraCorrect() throws IOException{
+    	//Ceci est un test vérifiant que un sous-chemin d'un plus court chemin est un plus court
+    	
+    	String mapName = "/Users/viktor/Desktop/ReINSA LEARNING/BE Graphe/BE-Graphe/Maps/insa.mapgr";
+    	GraphReader reader = new BinaryGraphReader(new DataInputStream(new BufferedInputStream(new FileInputStream(mapName))));
+    	Graph graphINSA = reader.read();
+    	
+    	//En distance
+    	data = new ShortestPathData(graphINSA, graphINSA.getNodes().get(1304),graphINSA.getNodes().get(725), ArcInspectorFactory.getAllFilters().get(0));
+    	DijkstraAlgorithm dijkstra = new DijkstraAlgorithm(data);
+    	ShortestPathSolution solutionDij = dijkstra.run();
+    	for(Arc arc : solutionDij.getPath().getArcs()) {
+    		ShortestPathData testData = new ShortestPathData(graphINSA, graphINSA.getNodes().get(1304),arc.getDestination(), ArcInspectorFactory.getAllFilters().get(0));
+    		DijkstraAlgorithm dijkstraTest = new DijkstraAlgorithm(testData);
+    		ShortestPathSolution solutionTest = dijkstraTest.run();
+    		//On a créé un sous chemin entre le noeud d'origine et un noeud sur le chemin vers la destination,
+    		//Et on compare si son dernier arc est le même que pour notre solution.
+    		assertEquals(arc,solutionTest.getPath().getArcs().get(solutionTest.getPath().getArcs().size()-1));
+    	}
+    	
+    	//En temps
+    	data = new ShortestPathData(graphINSA, graphINSA.getNodes().get(1304),graphINSA.getNodes().get(725), ArcInspectorFactory.getAllFilters().get(2));
+    	dijkstra = new DijkstraAlgorithm(data);
+    	solutionDij = dijkstra.run();
+    	for(Arc arc : solutionDij.getPath().getArcs()) {
+    		ShortestPathData testData = new ShortestPathData(graphINSA, graphINSA.getNodes().get(1304),arc.getDestination(), ArcInspectorFactory.getAllFilters().get(2));
+    		DijkstraAlgorithm dijkstraTest = new DijkstraAlgorithm(testData);
+    		ShortestPathSolution solutionTest = dijkstraTest.run();
+    		assertEquals(arc,solutionTest.getPath().getArcs().get(solutionTest.getPath().getArcs().size()-1));
+    	}
     }
 }
