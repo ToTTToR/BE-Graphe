@@ -44,7 +44,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         		break; //On a trouvé la destination avec un cout minimal
         	}
         	
-        	//On parcours tous ses successeurs
+        	//Sinon, on parcours tous ses successeurs
         	for(Arc successeur : minTas.SommetCourant.getSuccessors()){
         		
         		//Il faut voir si le chemin est valide (peut être parcouru selon notre mode de transport)! Sinon on skip.
@@ -57,6 +57,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         			double w = data.getCost(successeur);
         			Label LabelSucc = labels.get(successeur.getDestination().getId());
         			Label LabelCourant = labels.get(successeur.getOrigin().getId());
+        			
         			//On compare le cout du sommet successeur avec le cout du sommet courant + le cout du trajet
         			if(LabelSucc.getCost() > LabelCourant.getCost() + w) { 
         				//On regarde si le sommet a un père => si le label est dans la pile. 

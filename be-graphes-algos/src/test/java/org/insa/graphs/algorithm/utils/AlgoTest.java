@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.List;
+import java.util.Random;
 
 import org.insa.graphs.algorithm.*;
 import org.insa.graphs.algorithm.AbstractInputData.Mode;
@@ -28,7 +29,9 @@ import org.junit.Test;
 //Class de test pour Dijkstra
 public class AlgoTest {
 	//Le dit graph
-	private static Graph graph1,graph2,graphNotConnex,graphCarre,graphINSA;
+	private static Graph graph1,graph2,graphNotConnex,graphCarre;
+
+	protected static Graph graphINSA;
 
     // Liste de nodes
     private static Node[] nodes;
@@ -57,7 +60,25 @@ public class AlgoTest {
     	return Dijkstra.run();
     }
     
-    //@BeforeClass
+    @BeforeClass
+    public static void initSomeGraphs() throws IOException{
+    	
+    	//INSA MAP
+    	
+    	String mapName = "/Users/macair/Desktop/INSA Learning/BE Graphe/Maps/insa.mapgr";
+    	//String mapName = "/Users/viktor/Desktop/ReINSA LEARNING/BE Graphe/BE-Graphe/Maps/insa.mapgr"; Pour mon autre mac
+    	GraphReader reader = new BinaryGraphReader(new DataInputStream(new BufferedInputStream(new FileInputStream(mapName))));
+    	graphINSA = reader.read();
+    	
+    	//MAP CARRE
+    	
+    	mapName = "/Users/macair/Desktop/INSA Learning/BE Graphe/Maps/carre.mapgr";
+    	//mapName = "/Users/viktor/Desktop/ReINSA LEARNING/BE Graphe/BE-Graphe/Maps/carre.mapgr";
+    	reader = new BinaryGraphReader(new DataInputStream(new BufferedInputStream(new FileInputStream(mapName))));
+    	graphCarre = reader.read();
+    }
+    
+    @BeforeClass
     public static void initGraphNotConnex() {
     	nodes = new Node[2];
     	nodes[0] = new Node(0,new Point((float)0.0,(float)0.0));
@@ -146,11 +167,11 @@ public class AlgoTest {
     	
     	//Test pour la première carte pour chemin le plus court
     	initGraph1();
-    	validPathFromGraph1(ArcInspectorFactory.getAllFilters().get(0));
+    	validSolutionFromGraph1(ArcInspectorFactory.getAllFilters().get(0));
     	
     	//Test pour la deuxième carte
     	initGraph2();
-    	validPathFromGraph2(ArcInspectorFactory.getAllFilters().get(0));
+    	validSolutionFromGraph2(ArcInspectorFactory.getAllFilters().get(0));
     }
     
     @Test
@@ -165,14 +186,14 @@ public class AlgoTest {
     	
     	//Test pour la première carte pour chemin le plus court
     	initGraph1();
-    	validPathFromGraph1(ArcInspectorFactory.getAllFilters().get(2));
+    	validSolutionFromGraph1(ArcInspectorFactory.getAllFilters().get(2));
     	
     	//Test pour la deuxième carte
     	initGraph2();
-    	validPathFromGraph2(ArcInspectorFactory.getAllFilters().get(2));
+    	validSolutionFromGraph2(ArcInspectorFactory.getAllFilters().get(2));
     }
 	
-    public void validPathFromGraph1(ArcInspector inspector) throws IOException{
+    public void validSolutionFromGraph1(ArcInspector inspector) throws IOException{
     	if(inspector.getMode()==Mode.LENGTH) {
     		System.out.println("Mode longueur");
     		Path1 = shortPath1;
@@ -229,7 +250,7 @@ public class AlgoTest {
     }
     
     //@Test
-    public void validPathFromGraph2(ArcInspector inspector) throws IOException{
+    public void validSolutionFromGraph2(ArcInspector inspector) throws IOException{
     	
     	if(inspector.getMode()==Mode.LENGTH) {
     		System.out.println("Mode longueur");
@@ -261,8 +282,11 @@ public class AlgoTest {
     		assertEquals(Path2.getArcs().get(i).getDestination(),solution.getPath().getArcs().get(i).getDestination());
     	}
     	
-    	//Longueur correcte?
+    	//Longueur correcte? (pour distance)
     	assertEquals((int)Path2.getLength(),(int)solution.getPath().getLength());
+    	
+    	//Temps pris correct?
+    	assertEquals((int)Path2.getMinimumTravelTime(),(int)solution.getPath().getMinimumTravelTime());
     	
     	//Deuxième chemin
     	data = new ShortestPathData(graph2, nodes[0], nodes[2], inspector);
@@ -279,92 +303,118 @@ public class AlgoTest {
     	
     	//Longueur Correcte?
     	assertEquals((int)Path4.getLength(),(int)solution.getPath().getLength());
+    	
+    	//Temps pris correct?
+    	assertEquals((int)Path4.getMinimumTravelTime(),(int)solution.getPath().getMinimumTravelTime());
     }
 	
     @Test
-    public void compareWithBellman() throws IOException{
+    public void compareWithBellmanGraphCarre() throws IOException{
+    	Random rand = new Random();
+    	int max = graphCarre.getNodes().size();
     	//Test avec map carré
-    	//String mapName = "/Users/macair/Desktop/INSA Learning/BE Graphe/Maps/carre.mapgr";
-    	String mapName = "/Users/viktor/Desktop/ReINSA LEARNING/BE Graphe/BE-Graphe/Maps/carre.mapgr";
-    	GraphReader reader = new BinaryGraphReader(new DataInputStream(new BufferedInputStream(new FileInputStream(mapName))));
-    	graphCarre = reader.read();
     	
-    	//Test en distance
-    	data = new ShortestPathData(graphCarre, graphCarre.getNodes().get(0),graphCarre.getNodes().get(9), ArcInspectorFactory.getAllFilters().get(0));
-    	BellmanFordAlgorithm BM = new BellmanFordAlgorithm(data);
+    	//On fait 10 tests sur la carte carré en distance et en temps: 
     	
-    	//Construction des solutions 
-    	ShortestPathSolution solutionBM = BM.run();
-    	solution = makeSolution(data);
+    	for(int i=0;i<10;i++) {
+    		int origin = rand.nextInt(max);
+    		int destination = rand.nextInt(max);
     	
-    	//Longueur des chemins égaux?
-    	assertEquals((int)solutionBM.getPath().getLength(),(int)solution.getPath().getLength());
-    	
-    	//Chemins égaux?
-    	for(int i=0;i<solutionBM.getPath().getArcs().size();i++) {
-    		assertEquals(solutionBM.getPath().getArcs().get(i),solution.getPath().getArcs().get(i));
+	    	//Test en distance
+	    	data = new ShortestPathData(graphCarre, graphCarre.getNodes().get(origin),graphCarre.getNodes().get(destination), ArcInspectorFactory.getAllFilters().get(0));
+	    	BellmanFordAlgorithm BM = new BellmanFordAlgorithm(data);
+	    	
+	    	//Construction des solutions 
+	    	ShortestPathSolution solutionBM = BM.run();
+	    	solution = makeSolution(data);
+	    	
+	    	//Si le chemin n'est pas faisable, pas besoin de vérifier 
+	    	if(!solutionBM.isFeasible())
+	    		assertTrue(!solution.isFeasible());
+	    	else {
+		    	//Longueur des chemins égaux?
+		    	assertEquals((int)solutionBM.getPath().getLength(),(int)solution.getPath().getLength());
+		    	
+		    	//Chemins égaux? (ici, on suppose qu'il n'existe qu'un unique chemin à cout minimal)
+		    	/*for(int j=0;j<solutionBM.getPath().getArcs().size();j++) {
+		    		assertEquals(solutionBM.getPath().getArcs().get(j),solution.getPath().getArcs().get(j));
+		    	}*/
+	    	}
+		    //Test en temps
+		    data = new ShortestPathData(graphCarre, graphCarre.getNodes().get(origin),graphCarre.getNodes().get(destination), ArcInspectorFactory.getAllFilters().get(2));
+		    BM = new BellmanFordAlgorithm(data);
+		    	
+		    solutionBM = BM.run();
+		    solution = makeSolution(data);
+		    	
+		    if(!solutionBM.isFeasible())
+		    	assertTrue(!solution.isFeasible());
+		    else {
+		    	//Temps pris par les chemins égaux?
+		    	assertEquals((int)solutionBM.getPath().getMinimumTravelTime(),(int)solution.getPath().getMinimumTravelTime());
+		    	
+		    	//Chemins égaux?
+		    	/*for(int j=0;j<solutionBM.getPath().getArcs().size();j++) {
+		    		assertEquals(solutionBM.getPath().getArcs().get(j),solution.getPath().getArcs().get(j));
+		    	}*/
+		    }
     	}
+    }
     	
-    	//Test en temps
-    	data = new ShortestPathData(graphCarre, graphCarre.getNodes().get(0),graphCarre.getNodes().get(9), ArcInspectorFactory.getAllFilters().get(2));
-    	BM = new BellmanFordAlgorithm(data);
-    	
-    	solutionBM = BM.run();
-    	solution = makeSolution(data);
-    	
-    	//Temps pris par les chemins égaux?
-    	assertEquals((int)solutionBM.getPath().getMinimumTravelTime(),(int)solution.getPath().getMinimumTravelTime());
-    	
-    	//Chemins égaux?
-    	for(int i=0;i<solutionBM.getPath().getArcs().size();i++) {
-    		assertEquals(solutionBM.getPath().getArcs().get(i),solution.getPath().getArcs().get(i));
-    	}
-    	
+    @Test
+    public void compareWithBellmanGraphINSA() throws IOException{
+    	Random rand = new Random();
+    	int max = rand.nextInt(graphINSA.getNodes().size());
     	//Test avec carte de l'INSA
-    	//mapName = "/Users/macair/Desktop/INSA Learning/BE Graphe/Maps/insa.mapgr";
-    	mapName = "/Users/viktor/Desktop/ReINSA LEARNING/BE Graphe/BE-Graphe/Maps/insa.mapgr";
-    	reader = new BinaryGraphReader(new DataInputStream(new BufferedInputStream(new FileInputStream(mapName))));
-    	graphINSA = reader.read();
     	
+    	//On va faire 50 tests pour la carte INSA
+    	
+    	for(int j=0;j<50;j++) {
+    		int origin = rand.nextInt(max);
+    		int destination = rand.nextInt(max);
     	//Test en distance
-    	data = new ShortestPathData(graphINSA, graphINSA.getNodes().get(1304),graphINSA.getNodes().get(725), ArcInspectorFactory.getAllFilters().get(0));
-    	BM = new BellmanFordAlgorithm(data);
-    	solutionBM = BM.run();
-    	solution = makeSolution(data);
     	
-    	//Longueur des chemins égaux?
-    	assertEquals((int)solutionBM.getPath().getLength(),(int)solution.getPath().getLength());
-    	
-    	//Chemins égaux?
-    	for(int i=0;i<solutionBM.getPath().getArcs().size();i++) {
-    		assertEquals(solutionBM.getPath().getArcs().get(i),solution.getPath().getArcs().get(i));
+	    	data = new ShortestPathData(graphINSA, graphINSA.getNodes().get(origin),graphINSA.getNodes().get(destination), ArcInspectorFactory.getAllFilters().get(0));
+	    	BellmanFordAlgorithm BM = new BellmanFordAlgorithm(data);
+	    	ShortestPathSolution solutionBM = BM.run();
+	    	solution = makeSolution(data);
+	    	
+	    	if(!solutionBM.isFeasible())
+	    		assertTrue(!solution.isFeasible());
+	    	else {
+		    	//Longueur des chemins égaux?
+		    	assertEquals((int)solutionBM.getPath().getLength(),(int)solution.getPath().getLength());
+		    	
+		    	//Chemins égaux? Sur un graphe aussi grand, on suppose qu'il n'existe qu'un unique chemin
+		    	for(int i=0;i<solutionBM.getPath().getArcs().size();i++) {
+		    		assertEquals(solutionBM.getPath().getArcs().get(i),solution.getPath().getArcs().get(i));
+		    	}
+	    	}
+	    	
+	    	//Test en temps
+	    	data = new ShortestPathData(graphINSA, graphINSA.getNodes().get(origin),graphINSA.getNodes().get(destination), ArcInspectorFactory.getAllFilters().get(2));
+	    	BM = new BellmanFordAlgorithm(data);
+	    	solutionBM = BM.run();
+	    	solution = makeSolution(data);
+	    	
+	    	if(!solutionBM.isFeasible())
+	    		assertTrue(!solution.isFeasible());
+	    	else {
+		    	//Temps pris des chemins égaux?
+		    	assertEquals((int)solutionBM.getPath().getMinimumTravelTime(),(int)solution.getPath().getMinimumTravelTime());
+		    	
+		    	//Chemins égaux?
+		    	for(int i=0;i<solutionBM.getPath().getArcs().size();i++) {
+		    		assertEquals(solutionBM.getPath().getArcs().get(i),solution.getPath().getArcs().get(i));
+		    	}
+	    	}
     	}
-    	
-    	//Test en temps
-    	data = new ShortestPathData(graphINSA, graphINSA.getNodes().get(804),graphINSA.getNodes().get(203), ArcInspectorFactory.getAllFilters().get(2));
-    	BM = new BellmanFordAlgorithm(data);
-    	solutionBM = BM.run();
-    	solution = makeSolution(data);
-    	
-    	//Temps pris des chemins égaux?
-    	assertEquals((int)solutionBM.getPath().getMinimumTravelTime(),(int)solution.getPath().getMinimumTravelTime());
-    	
-    	//Chemins égaux?
-    	for(int i=0;i<solutionBM.getPath().getArcs().size();i++) {
-    		assertEquals(solutionBM.getPath().getArcs().get(i),solution.getPath().getArcs().get(i));
-    	}
-    	
-    	System.out.println("Temps de solvabilité BellmannFord : "+solutionBM.getSolvingTime().toString());
-    	System.out.println("Temps de solvabilité Dijkstra/AStar : "+solution.getSolvingTime().toString());
     }
     
     @Test
     public void FonctionnementDijkstraCorrect() throws IOException{
     	//Ceci est un test vérifiant que un sous-chemin d'un plus court chemin est un plus court
-    	
-    	String mapName = "/Users/viktor/Desktop/ReINSA LEARNING/BE Graphe/BE-Graphe/Maps/insa.mapgr";
-    	GraphReader reader = new BinaryGraphReader(new DataInputStream(new BufferedInputStream(new FileInputStream(mapName))));
-    	Graph graphINSA = reader.read();
+    
     	
     	//En distance
     	data = new ShortestPathData(graphINSA, graphINSA.getNodes().get(1304),graphINSA.getNodes().get(725), ArcInspectorFactory.getAllFilters().get(0));
