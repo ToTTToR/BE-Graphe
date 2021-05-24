@@ -97,6 +97,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
             Path chemin = new Path(graph, arcs);
             if(!chemin.isValid()) System.out.println("Chemin non valide!");
             solution = new ShortestPathSolution(data, Status.OPTIMAL, chemin);
+            
         }
         
         return solution;
